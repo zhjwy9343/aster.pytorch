@@ -42,7 +42,10 @@ def get_data(data_dir, voc_type, max_len, num_samples, height, width, batch_size
   print('total image: ', len(dataset))
 
   if is_train:
-    data_loader = DataLoader(dataset, batch_size=batch_size, num_workers=workers,
+    # data_loader = DataLoader(dataset, batch_size=batch_size, num_workers=workers,
+    #   shuffle=True, pin_memory=True, drop_last=True,
+    #   collate_fn=AlignCollate(imgH=height, imgW=width, keep_ratio=keep_ratio))
+    data_loader = DataLoader(dataset, batch_size=batch_size,
       shuffle=True, pin_memory=True, drop_last=True,
       collate_fn=AlignCollate(imgH=height, imgW=width, keep_ratio=keep_ratio))
   else:
@@ -62,6 +65,7 @@ def get_dataset(data_dir, voc_type, max_len, num_samples):
   else:
     dataset = LmdbDataset(data_dir, voc_type, max_len, num_samples)
   print('total image: ', len(dataset))
+
   return dataset
 
 
@@ -134,6 +138,7 @@ def main(args):
     max_len = max(train_dataset.max_len, test_dataset.max_len)
     train_dataset.max_len = test_dataset.max_len = max_len
   # Create model
+  print('===== Creating Model =========')
   model = ModelBuilder(arch=args.arch, rec_num_classes=test_dataset.rec_num_classes,
                        sDim=args.decoder_sdim, attDim=args.attDim, max_len_labels=max_len,
                        eos=test_dataset.char2id[test_dataset.EOS], STN_ON=args.STN_ON)
@@ -169,19 +174,19 @@ def main(args):
   # Evaluator
   evaluator = Evaluator(model, args.evaluation_metric, args.cuda)
 
-  if args.evaluate:
-    print('Test on {0}:'.format(args.test_data_dir))
-    if len(args.vis_dir) > 0:
-      vis_dir = osp.join(args.logs_dir, args.vis_dir)
-      if not osp.exists(vis_dir):
-        os.makedirs(vis_dir)
-    else:
-      vis_dir = None
-
-    start = time.time()
-    evaluator.evaluate(test_loader, dataset=test_dataset, vis_dir=vis_dir)
-    print('it took {0} s.'.format(time.time() - start))
-    return
+  # if args.evaluate:
+  #   print('Test on {0}:'.format(args.test_data_dir))
+  #   if len(args.vis_dir) > 0:
+  #     vis_dir = osp.join(args.logs_dir, args.vis_dir)
+  #     if not osp.exists(vis_dir):
+  #       os.makedirs(vis_dir)
+  #   else:
+  #     vis_dir = None
+  #
+  #   start = time.time()
+  #   evaluator.evaluate(test_loader, dataset=test_dataset, vis_dir=vis_dir)
+  #   print('it took {0} s.'.format(time.time() - start))
+  #   return
 
   # Optimizer
   param_groups = model.parameters()
@@ -199,16 +204,16 @@ def main(args):
                     use_cuda=args.cuda, loss_weights=loss_weights)
 
   # Start training
-  evaluator.evaluate(test_loader, step=0, tfLogger=eval_tfLogger, dataset=test_dataset)
+  # evaluator.evaluate(test_loader, step=0, tfLogger=eval_tfLogger, dataset=test_dataset)
   for epoch in range(start_epoch, args.epochs):
     scheduler.step(epoch)
     current_lr = optimizer.param_groups[0]['lr']
     trainer.train(epoch, train_loader, optimizer, current_lr,
                   print_freq=args.print_freq,
-                  train_tfLogger=train_tfLogger, 
+                  train_tfLogger=train_tfLogger,
                   is_debug=args.debug,
-                  evaluator=evaluator, 
-                  test_loader=test_loader, 
+                  evaluator=evaluator,
+                  test_loader=test_loader,
                   eval_tfLogger=eval_tfLogger,
                   test_dataset=test_dataset)
 
