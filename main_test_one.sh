@@ -1,13 +1,8 @@
 array=(
-  "IIIT5K_3000" 
-  "svt_647"
-  "ic03_867"
-  "ic13_1015"
-  "ic15_1811"
   "svt_p_645"
-  "cute80_288")
+)
 
-DLS_DATA_URL="xxx"
+DLS_DATA_URL="/Users/jamezhan/PycharmProjects/aster.pytorch/data/str_test/"
 DLS_TRAIN_URL=""
 for i in "${array[@]}"
 do
@@ -33,5 +28,5 @@ do
     --tps_margins 0.05 0.05 \
     --stn_activation none \
     --num_control_points 20 \
-    --resume xxx
+    --resume "/Users/jamezhan/PycharmProjects/aster.pytorch/data/"
 done

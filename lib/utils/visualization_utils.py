@@ -3,8 +3,8 @@ from __future__ import absolute_import
 from PIL import Image
 import os
 import numpy as np
-from collections import OrderedDict
-from scipy.misc import imresize
+# from collections import OrderedDict
+# from scipy.misc import imresize
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

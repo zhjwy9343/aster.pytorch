@@ -75,12 +75,12 @@ parser.add_argument('--loss_weights', nargs='+', type=float, default=[1,1,1])
 parser.add_argument('--resume', type=str, default='', metavar='PATH')
 parser.add_argument('--evaluate', action='store_true',
                     help="evaluation only")
-parser.add_argument('--epochs', type=int, default=6)
+parser.add_argument('--epochs', type=int, default=2)
 parser.add_argument('--start_save', type=int, default=0,
                     help="start saving checkpoints after specific epoch")
 parser.add_argument('--seed', type=int, default=1)
 parser.add_argument('--print_freq', type=int, default=100)
-parser.add_argument('--cuda', default=True, type=bool,
+parser.add_argument('--cuda', default=False, type=bool,
                     help='whether use cuda support.')
 # testing configs
 parser.add_argument('--evaluation_metric', type=str, default='accuracy')

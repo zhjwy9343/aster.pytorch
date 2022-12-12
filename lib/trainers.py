@@ -55,6 +55,8 @@ class BaseTrainer(object):
 
       data_time.update(time.time() - end)
 
+      print(inputs)
+
       input_dict = self._parse_data(inputs)
       output_dict = self._forward(input_dict)
 
@@ -62,11 +64,18 @@ class BaseTrainer(object):
 
       total_loss = 0
       loss_dict = {}
+
+      print('=========================================')
+      # print(self.loss_weights)
+      # print(output_dict['losses'])
+
       for k, loss in output_dict['losses'].items():
         loss = loss.mean(dim=0, keepdim=True)
         total_loss += self.loss_weights[k] * loss
         loss_dict[k] = loss.item()
         # print('{0}: {1}'.format(k, loss.item()))
+
+      print(total_loss)
 
       losses.update(total_loss.item(), batch_size)
 
